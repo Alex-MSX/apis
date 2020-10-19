@@ -1,0 +1,53 @@
+from flask import Flask, render_template, request, jsonify
+from models import *
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgres+psycopg2://postgres:ams253526370@localhost:5432/airline"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db.init_app(app)
+
+@app.route("/")
+def index():
+    flights = Flight.query.all()
+    return render_template("index.html", flights=flights)
+
+@app.route("/book", methods=["POST"])
+def book():
+    flight_id = request.form.get('flight_id')
+    name = request.form.get('name')
+
+    flight = Flight.query.get(flight_id)
+    flight.add_passenger(name)
+
+    passenger = Passenger.query.filter_by(name=name).first()
+
+    return render_template("book.html", passenger=passenger)
+
+@app.route("/flights")
+def flights():
+    flights = Flight.query.all()
+    return render_template("flights.html", flights=flights)
+
+@app.route("/flights/<int:flight_id>")
+def flight_detail(flight_id):
+    flight = Flight.query.get(flight_id)
+    return render_template("flight_detail.html", flight=flight)
+
+@app.route("/api/flights/<int:flight_id>")
+def flight_api(flight_id):
+    flight = Flight.query.get(flight_id)
+
+    if flight is None:
+        return jsonify({"error":"Invalid flight"}), 422
+
+    passengers = flight.passengers
+    names = []
+
+    for passenger in passengers:
+        names.append(passenger.name)
+
+    return jsonify({
+        "origin":flight.origin,
+        "destination":flight.destination,
+        "duration":flight.duration,
+        "passengers":names})

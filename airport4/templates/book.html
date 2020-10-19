@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <h1>Success!</h1>
+  <a href="{{ url_for('index') }}">Return to index</a>
+  <hr>
+
+  <h3>{{ passenger.name }} succesfully registered in flight {{ passenger.flight.origin }} to {{ passenger.flight.destination }}</h3>
+{% endblock %}

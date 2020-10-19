@@ -1,0 +1,5 @@
+Conceptos:
+
+- Introduccion a las apis
+- Introducción al lenguaje JSON
+- Utilizar la librería requests -> pip install requests
